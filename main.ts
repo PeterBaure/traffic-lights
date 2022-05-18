@@ -6,7 +6,7 @@ radio.onReceivedNumber(function (receivedNumber) {
     }
 })
 function crosswalk () {
-    basic.pause(5000)
+    basic.pause(1000)
     green()
     basic.showIcon(IconNames.StickFigure)
     basic.pause(5000)
@@ -57,6 +57,19 @@ function countdown () {
 input.onButtonPressed(Button.A, function () {
     walking = 1
 })
+function CENSOR () {
+    pins.digitalWritePin(DigitalPin.P1, 0)
+    control.waitMicros(2)
+    pins.digitalWritePin(DigitalPin.P1, 1)
+    control.waitMicros(10)
+    pins.digitalWritePin(DigitalPin.P1, 0)
+    distance = pins.pulseIn(DigitalPin.P2, PulseValue.High) / 58
+    if (distance <= 5) {
+        walking = 3
+    } else {
+        walking = 0
+    }
+}
 input.onButtonPressed(Button.B, function () {
     walking = 2
     count_3 = 1
@@ -89,9 +102,6 @@ function OFF () {
     range = strip.range(2, 1)
     range.showColor(neopixel.colors(NeoPixelColors.Black))
 }
-function sensor () {
-	
-}
 function red_light () {
     range = strip.range(0, 1)
     range.showColor(neopixel.colors(NeoPixelColors.Red))
@@ -111,17 +121,7 @@ strip = neopixel.create(DigitalPin.P16, 3, NeoPixelMode.RGB)
 radio.setGroup(20)
 count_3 = 0
 basic.forever(function () {
-    pins.digitalWritePin(DigitalPin.P1, 0)
-    control.waitMicros(2)
-    pins.digitalWritePin(DigitalPin.P1, 1)
-    control.waitMicros(10)
-    pins.digitalWritePin(DigitalPin.P1, 0)
-    distance = pins.pulseIn(DigitalPin.P2, PulseValue.High) / 58
-    if (distance >= 5) {
-        walking = 1
-    }
-})
-basic.forever(function () {
+    CENSOR()
     if (walking == 0) {
         basic.showLeds(`
             # . . . #
@@ -136,6 +136,9 @@ basic.forever(function () {
         walking = 0
     } else if (walking == 2) {
         crosswalk2()
+        walking = 0
+    } else if (walking == 3) {
+        crosswalk()
         walking = 0
     }
 })
