@@ -6,10 +6,10 @@ radio.onReceivedNumber(function (receivedNumber) {
     }
 })
 function crosswalk () {
-    basic.pause(1000)
+    basic.pause(6000)
     green()
     basic.showIcon(IconNames.StickFigure)
-    basic.pause(5000)
+    basic.pause(20000)
     countdown()
     basic.clearScreen()
     basic.showIcon(IconNames.No)
@@ -58,17 +58,12 @@ input.onButtonPressed(Button.A, function () {
     walking = 1
 })
 function CENSOR () {
-    pins.digitalWritePin(DigitalPin.P1, 0)
+    pins.digitalWritePin(DigitalPin.P8, 0)
     control.waitMicros(2)
-    pins.digitalWritePin(DigitalPin.P1, 1)
+    pins.digitalWritePin(DigitalPin.P8, 1)
     control.waitMicros(10)
-    pins.digitalWritePin(DigitalPin.P1, 0)
-    distance = pins.pulseIn(DigitalPin.P2, PulseValue.High) / 58
-    if (distance <= 5) {
-        walking = 3
-    } else {
-        walking = 0
-    }
+    pins.digitalWritePin(DigitalPin.P8, 0)
+    distance = pins.pulseIn(DigitalPin.P13, PulseValue.High) / 58
 }
 input.onButtonPressed(Button.B, function () {
     walking = 2
@@ -110,18 +105,19 @@ function red_light () {
     range = strip.range(2, 1)
     range.showColor(neopixel.colors(NeoPixelColors.Black))
 }
+let censor = 0
 let distance = 0
-let walking = 0
 let count = 0
 let count_2 = 0
 let range: neopixel.Strip = null
+let walking = 0
 let count_3 = 0
 let strip: neopixel.Strip = null
 strip = neopixel.create(DigitalPin.P16, 3, NeoPixelMode.RGB)
 radio.setGroup(20)
 count_3 = 0
+walking = 0
 basic.forever(function () {
-    CENSOR()
     if (walking == 0) {
         basic.showLeds(`
             # . . . #
@@ -137,8 +133,18 @@ basic.forever(function () {
     } else if (walking == 2) {
         crosswalk2()
         walking = 0
-    } else if (walking == 3) {
-        crosswalk()
-        walking = 0
     }
+})
+basic.forever(function () {
+    for (let index = 0; index < 4; index++) {
+        CENSOR()
+        if (distance <= 5) {
+            censor += 1
+        }
+        if (censor == 4) {
+            walking = 1
+            censor = 0
+        }
+    }
+    censor = 0
 })
