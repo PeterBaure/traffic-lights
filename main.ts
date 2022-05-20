@@ -14,6 +14,7 @@ function crosswalk () {
     basic.clearScreen()
     basic.showIcon(IconNames.No)
     yellow()
+    basic.pause(3000)
 }
 function green () {
     range = strip.range(0, 1)
@@ -70,8 +71,9 @@ input.onButtonPressed(Button.B, function () {
     count_3 = 1
 })
 function crosswalk2 () {
-    basic.pause(1000)
+    basic.pause(5000)
     green()
+    basic.pause(2000)
     for (let index = 0; index < 10; index++) {
         music.playTone(659, music.beat(BeatFraction.Half))
         basic.showIcon(IconNames.StickFigure)
@@ -80,6 +82,7 @@ function crosswalk2 () {
     basic.clearScreen()
     basic.showIcon(IconNames.No)
     yellow()
+    basic.pause(3000)
 }
 function yellow () {
     range = strip.range(0, 1)
